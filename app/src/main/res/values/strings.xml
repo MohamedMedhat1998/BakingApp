@@ -1,3 +1,26 @@
 <resources>
     <string name="app_name">Baking App</string>
+
+    <string name="api">https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json</string>
+
+    <!--Recipe Json Keys -->
+    <string name="recipeId">id</string>
+    <string name="recipeName">name</string>
+    <string name="recipeIngredients">ingredients</string>
+    <string name="recipeSteps">steps</string>
+    <string name="recipeServings">servings</string>
+    <string name="recipeImage">image</string>
+
+    <!--Ingredient Json Keys -->
+    <string name="ingredientQuantity">quantity</string>
+    <string name="ingredientMeasure">measure</string>
+    <string name="ingredientIngredient">ingredient</string>
+
+    <!--Step Json Keys -->
+    <string name="stepId">id</string>
+    <string name="stepShortDescription">shortDescription</string>
+    <string name="stepDescription">description</string>
+    <string name="stepVideoURL">videoURL</string>
+    <string name="stepThumbnailURL">thumbnailURL</string>
+
 </resources>

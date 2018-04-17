@@ -7,8 +7,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.andalus.abomed7at55.bakingapp.Networking.Networking;
+import com.andalus.abomed7at55.bakingapp.Recipes.JsonParser;
+import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
+
+import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected String doInBackground(String... strings) {
                 try {
-                    jsonString = Networking.retrieveJson("https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json");
+                    jsonString = Networking.retrieveJson(getBaseContext().getString(R.string.api));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -32,7 +37,15 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void onPostExecute(String s) {
-                Log.d("Json String" , jsonString);
+                Log.d("Json String" , s);
+                JsonParser jsonParser = new JsonParser(getApplicationContext());
+                try {
+                    ArrayList<Recipe> myArrayList = jsonParser.getRecipeArrayList(s);
+                    Log.d("ArrayList" ,"Success");
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         }.execute();
 
