@@ -23,4 +23,6 @@
     <string name="stepVideoURL">videoURL</string>
     <string name="stepThumbnailURL">thumbnailURL</string>
 
+    <string name="noInternetMessage">Please Check your Internet Connection</string>
+
 </resources>

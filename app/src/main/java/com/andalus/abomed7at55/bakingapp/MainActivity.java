@@ -1,53 +1,74 @@
 package com.andalus.abomed7at55.bakingapp;
 
-import android.os.AsyncTask;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.andalus.abomed7at55.bakingapp.Networking.MyLoader;
 import com.andalus.abomed7at55.bakingapp.Networking.Networking;
 import com.andalus.abomed7at55.bakingapp.Recipes.JsonParser;
-import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
-
-import org.json.JSONException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity {
+
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> {
+
+    private static final int LOADER_ID = 1;
+    private JsonParser mJsonParser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        //TODO Check for the Network state before requesting an Internet Connection
-        new AsyncTask<String,Void,String>(){
-            String jsonString;
-            @Override
-            protected String doInBackground(String... strings) {
-                try {
-                    jsonString = Networking.retrieveJson(getBaseContext().getString(R.string.api));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                return jsonString;
-            }
+        mJsonParser = new JsonParser(this);
 
-            @Override
-            protected void onPostExecute(String s) {
-                Log.d("Json String" , s);
-                JsonParser jsonParser = new JsonParser(getApplicationContext());
-                try {
-                    ArrayList<Recipe> myArrayList = jsonParser.getRecipeArrayList(s);
-                    Log.d("ArrayList" ,"Success");
+        if(isOnline()){
+            LoaderManager loaderManager = getSupportLoaderManager();
+            loaderManager.initLoader(LOADER_ID,null,this).forceLoad();
+        }else{
+            //TODO support onSavedInstanceState
+            Toast.makeText(getApplicationContext(),getString(R.string.noInternetMessage),Toast.LENGTH_LONG).show();
+            //TODO Load the cached Items
+        }
 
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.execute();
+
 
     }
+
+    private boolean isOnline(){
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+        if(activeNetwork != null && activeNetwork.isConnectedOrConnecting()){
+            return true;
+        }else {
+            return false;
+        }
+    }
+    //Loader callbacks
+    @Override
+    public Loader<String> onCreateLoader(int id, Bundle args) {
+        return new MyLoader(this,getString(R.string.api));
+    }
+
+    @Override
+    public void onLoadFinished(Loader<String> loader, String data) {
+        Log.d("data",data);
+        //TODO create a RecyclerView and an adapter and populate the data here
+    }
+
+    @Override
+    public void onLoaderReset(Loader<String> loader) {
+
+    }
+    //-------------------
+
+
 }
