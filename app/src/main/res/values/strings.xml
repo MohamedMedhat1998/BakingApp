@@ -23,6 +23,8 @@
     <string name="stepVideoURL">videoURL</string>
     <string name="stepThumbnailURL">thumbnailURL</string>
 
+    <!--Other Strings-->
     <string name="noInternetMessage">Please Check your Internet Connection</string>
+    <string name="ingredients">Ingredients</string>
 
 </resources>
