@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
 import com.andalus.abomed7at55.bakingapp.R;
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * This is the adapter of the recycler view of the steps list
@@ -23,8 +25,10 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
     //The data
     private ArrayList<Step> stepData;
     //TODO add a click listener to this adapter to open the details activity
-    public StepsAdapter(ArrayList<Step> data){
+    private StepClickListener clickListener;
+    public StepsAdapter(ArrayList<Step> data , StepClickListener stepClickListener){
         stepData = data;
+        clickListener = stepClickListener;
     }
 
     @Override
@@ -53,6 +57,10 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
         public StepViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+        }
+        @OnClick(R.id.tv_step_short_description_in_the_list)
+        void onStepClicked(){
+            clickListener.onStepClicked();
         }
     }
 }
