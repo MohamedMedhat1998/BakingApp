@@ -12,6 +12,7 @@ import com.andalus.abomed7at55.bakingapp.Adapters.StepsAdapter;
 import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
 import com.andalus.abomed7at55.bakingapp.Recipes.Ingredient;
 import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
+import com.andalus.abomed7at55.bakingapp.Recipes.Step;
 
 import java.util.ArrayList;
 
@@ -35,7 +36,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
         ButterKnife.bind(this);
-
+        //TODO Support onSaveInstanceState
         recipes = MainActivity.getExportableRecipes();
         selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
         exportableIngredients = selectedRecipe.getIngredients();
@@ -43,7 +44,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         StepsAdapter adapter = new StepsAdapter(selectedRecipe.getSteps(),this);
         stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stepListRecyclerView.setAdapter(adapter);
-        //TODO set up the details activity (Use fragments)
 
     }
 
@@ -68,8 +68,9 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     }
 
     @Override
-    public void onStepClicked() {
-        //TODO Edit this step click
-        startActivity(new Intent(this,DetailsActivity.class));
+    public void onStepClicked(Step selectedStep) {
+        Intent i = new Intent(this,DetailsActivity.class);
+        i.putExtra(getString(R.string.keySelectedStep),selectedStep);
+        startActivity(i);
     }
 }

@@ -58,6 +58,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
         public RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
         }
         @OnClick(R.id.tv_recipe_menu_label)
         void labelClicked(){

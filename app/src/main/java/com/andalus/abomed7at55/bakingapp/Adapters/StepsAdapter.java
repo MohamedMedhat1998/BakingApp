@@ -41,7 +41,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
 
     @Override
     public void onBindViewHolder(StepViewHolder holder, int position) {
-        holder.tvShortDescriptionInTheList.setText(stepData.get(position).getDescription());
+        holder.tvShortDescriptionInTheList.setText(stepData.get(position).getShortDescription());
     }
 
     @Override
@@ -60,7 +60,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
         }
         @OnClick(R.id.tv_step_short_description_in_the_list)
         void onStepClicked(){
-            clickListener.onStepClicked();
+            clickListener.onStepClicked(stepData.get(getAdapterPosition()));
         }
     }
 }

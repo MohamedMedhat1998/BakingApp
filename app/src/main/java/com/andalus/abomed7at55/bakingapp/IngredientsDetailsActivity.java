@@ -23,6 +23,7 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients_details);
+        //TODO Support onSaveInstanceState
 
         ButterKnife.bind(this);
 

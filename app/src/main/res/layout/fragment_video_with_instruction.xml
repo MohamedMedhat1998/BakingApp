@@ -43,7 +43,7 @@
         app:layout_constraintTop_toTopOf="@+id/guideline2">
 
         <TextView
-            android:id="@+id/tv_view_description"
+            android:id="@+id/tv_view_full_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             tools:text="TextView" />

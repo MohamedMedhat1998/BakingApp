@@ -27,5 +27,8 @@
     <string name="noInternetMessage">Please Check your Internet Connection</string>
     <string name="ingredients">Ingredients</string>
     <string name="recipeArrayKey">recipe_array_list</string>
+    <string name="nextOrPrevious">Navigation to next or previous step?</string>
+    <string name="keySelectedStep">selectedStep</string>
+    <string name="keySelectedRecipe">selectedRecipe</string>
 
 </resources>
