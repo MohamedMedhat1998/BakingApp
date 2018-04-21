@@ -10,6 +10,7 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -34,6 +35,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private static final int LOADER_ID = 1;
     private JsonParser mJsonParser;
     private static ArrayList<Recipe> exportableRecipes;
+    private ArrayList<Recipe> recipes;
+    private RecipeAdapter adapter;
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recipeRecyclerView;
@@ -49,15 +52,39 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         ButterKnife.bind(this);
         mJsonParser = new JsonParser(this);
-        //TODO support onSavedInstanceState
+        if(savedInstanceState != null){
+            loadSavedData(savedInstanceState);
+        }else {
+            startLoadingData();
+        }
+
+    }
+
+    /**
+     * This method is used when the savedInstanceState is not available
+     */
+    private void startLoadingData(){
         if(isOnline()){
             LoaderManager loaderManager = getSupportLoaderManager();
             loaderManager.initLoader(LOADER_ID,null,this).forceLoad();
         }else{
             tvNoConnection.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(),getString(R.string.noInternetMessage),Toast.LENGTH_LONG).show();
         }
+    }
 
+    /**
+     * This method is used when the savedInstanceState is available
+     */
+    private void loadSavedData(Bundle savedState){
+        recipes = savedState.getParcelableArrayList(getString(R.string.recipeArrayKey));
+        if(recipes == null){
+            startLoadingData();
+            return;
+        }
+        exportableRecipes = recipes;
+        adapter = new RecipeAdapter(recipes,this);
+        recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recipeRecyclerView.setAdapter(adapter);
 
     }
 
@@ -90,9 +117,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     public void onLoadFinished(Loader<String> loader, String data) {
         indicatorProgressBar.setVisibility(View.INVISIBLE);
         try {
-            ArrayList<Recipe> recipes = mJsonParser.getRecipeArrayList(data);
+            recipes = mJsonParser.getRecipeArrayList(data);
             exportableRecipes = recipes;
-            RecipeAdapter adapter = new RecipeAdapter(recipes,this);
+            adapter = new RecipeAdapter(recipes,this);
             recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             recipeRecyclerView.setAdapter(adapter);
         } catch (JSONException e) {
@@ -108,12 +135,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onRecipeClicked(String recipeId) {
-        //TODO open the steps list activity with the correct recipe steps
         Intent i = new Intent(this,StepsActivity.class);
         i.putExtra(getString(R.string.recipeId),recipeId);
         startActivity(i);
-
-        Toast.makeText(getBaseContext(),recipeId,Toast.LENGTH_SHORT).show();
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(getString(R.string.recipeArrayKey),recipes);
+    }
 }

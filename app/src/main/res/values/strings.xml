@@ -26,5 +26,6 @@
     <!--Other Strings-->
     <string name="noInternetMessage">Please Check your Internet Connection</string>
     <string name="ingredients">Ingredients</string>
+    <string name="recipeArrayKey">recipe_array_list</string>
 
 </resources>
