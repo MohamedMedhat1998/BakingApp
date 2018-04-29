@@ -24,7 +24,7 @@ import butterknife.OnClick;
 public class StepsActivity extends AppCompatActivity implements StepClickListener {
 
     private ArrayList<Recipe> recipes;
-    private Recipe selectedRecipe;
+    private static Recipe selectedRecipe;
     private static ArrayList<Ingredient> exportableIngredients;
 
     @BindView(R.id.rv_steps_list)
@@ -65,6 +65,18 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         return id;
     }
 
+    /**
+     * This method is used to retrieve all the steps of the selected recipe
+     * @return steps ArrayList
+     */
+    public static ArrayList<Step> getExportableSteps(){
+        return selectedRecipe.getSteps();
+    }
+
+    /**
+     * This method is used to get the ingredients of the selected recipe
+     * @return ingredients ArrayList
+     */
     public static ArrayList<Ingredient> getExportableIngredients() {
         return exportableIngredients;
     }
