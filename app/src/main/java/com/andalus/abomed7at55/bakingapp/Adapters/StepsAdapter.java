@@ -5,6 +5,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
@@ -41,7 +42,7 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
 
     @Override
     public void onBindViewHolder(StepViewHolder holder, int position) {
-        holder.tvShortDescriptionInTheList.setText(stepData.get(position).getShortDescription());
+        holder.btnShortDescriptionInTheList.setText(stepData.get(position).getShortDescription());
     }
 
     @Override
@@ -51,14 +52,14 @@ public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHold
 
     public class StepViewHolder extends RecyclerView.ViewHolder{
 
-        @BindView(R.id.tv_step_short_description_in_the_list)
-        TextView tvShortDescriptionInTheList;
+        @BindView(R.id.btn_step_short_description_in_the_list)
+        Button btnShortDescriptionInTheList;
 
         public StepViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
         }
-        @OnClick(R.id.tv_step_short_description_in_the_list)
+        @OnClick(R.id.btn_step_short_description_in_the_list)
         void onStepClicked(){
             clickListener.onStepClicked(stepData.get(getAdapterPosition()));
         }

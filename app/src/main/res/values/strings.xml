@@ -30,5 +30,7 @@
     <string name="nextOrPrevious">Navigation to next or previous step?</string>
     <string name="keySelectedStep">selectedStep</string>
     <string name="keySelectedRecipe">selectedRecipe</string>
+    <string name="recipes">Recipes</string>
+    <string name="steps">Steps</string>
 
 </resources>

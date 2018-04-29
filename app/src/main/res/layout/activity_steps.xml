@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/constraint"
     tools:context="com.andalus.abomed7at55.bakingapp.StepsActivity">
 
-    <fragment
-        android:id="@+id/fragment_steps_in_steps_activity"
-        android:name="com.andalus.abomed7at55.bakingapp.UI.FragmentStepsList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        <fragment
+            android:id="@+id/fragment_steps_in_steps_activity"
+            android:name="com.andalus.abomed7at55.bakingapp.UI.FragmentStepsList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
-</android.support.constraint.ConstraintLayout>
+
+    </LinearLayout>

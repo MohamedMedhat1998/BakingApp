@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.Adapters.StepsAdapter;
@@ -28,8 +29,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
-    @BindView(R.id.tv_steps_list_ingredients)
-    TextView tvIngredients;
+    @BindView(R.id.btn_steps_list_ingredients)
+    Button btnIngredients;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +42,14 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
         exportableIngredients = selectedRecipe.getIngredients();
 
+        stepListRecyclerView.setNestedScrollingEnabled(false);
         StepsAdapter adapter = new StepsAdapter(selectedRecipe.getSteps(),this);
         stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         stepListRecyclerView.setAdapter(adapter);
 
     }
 
-    @OnClick(R.id.tv_steps_list_ingredients)
+    @OnClick(R.id.btn_steps_list_ingredients)
     void openIngredientsList(){
         startActivity(new Intent(this,IngredientsDetailsActivity.class));
     }
