@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:layout_height="match_parent">
 
-    <!--TODO fix this UI-->
 
     <Button
         android:id="@+id/btn_steps_list_ingredients"

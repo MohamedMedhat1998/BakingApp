@@ -25,7 +25,6 @@ import butterknife.OnClick;
 public class StepsAdapter extends RecyclerView.Adapter<StepsAdapter.StepViewHolder>{
     //The data
     private ArrayList<Step> stepData;
-    //TODO add a click listener to this adapter to open the details activity
     private StepClickListener clickListener;
     public StepsAdapter(ArrayList<Step> data , StepClickListener stepClickListener){
         stepData = data;

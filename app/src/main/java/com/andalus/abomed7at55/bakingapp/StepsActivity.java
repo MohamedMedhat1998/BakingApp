@@ -26,6 +26,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private ArrayList<Recipe> recipes;
     private static Recipe selectedRecipe;
     private static ArrayList<Ingredient> exportableIngredients;
+    private ArrayList<Step> stepsList;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -37,15 +38,22 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
         ButterKnife.bind(this);
-        //TODO Support onSaveInstanceState
-        recipes = MainActivity.getExportableRecipes();
-        selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
-        exportableIngredients = selectedRecipe.getIngredients();
+        if(savedInstanceState == null){
+            recipes = MainActivity.getExportableRecipes();
+            selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
+            exportableIngredients = selectedRecipe.getIngredients();
+            stepsList = selectedRecipe.getSteps();
+            stepListRecyclerView.setNestedScrollingEnabled(false);
+            StepsAdapter adapter = new StepsAdapter(stepsList,this);
+            stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            stepListRecyclerView.setAdapter(adapter);
+        }else{
+            stepsList = savedInstanceState.getParcelableArrayList(getString(R.string.recipeSteps));
+            StepsAdapter adapter = new StepsAdapter(stepsList,this);
+            stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            stepListRecyclerView.setAdapter(adapter);
+        }
 
-        stepListRecyclerView.setNestedScrollingEnabled(false);
-        StepsAdapter adapter = new StepsAdapter(selectedRecipe.getSteps(),this);
-        stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        stepListRecyclerView.setAdapter(adapter);
 
     }
 
@@ -86,5 +94,11 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         Intent i = new Intent(this,DetailsActivity.class);
         i.putExtra(getString(R.string.keySelectedStep),selectedStep);
         startActivity(i);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(getString(R.string.recipeSteps),stepsList);
     }
 }

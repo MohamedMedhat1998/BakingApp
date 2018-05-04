@@ -80,10 +80,10 @@ public class DetailsActivity extends AppCompatActivity {
         tvCurrentStep.setText(currentStep.getShortDescription());
 
         tvShowViewFullDescription.setText(currentStep.getDescription());
-        //TODO Handle the case when there is no URL
         if(currentStep.getVideoURL().isEmpty()){
             if(!currentStep.getThumbnailURL().isEmpty()){
                 videoLink = currentStep.getThumbnailURL();
+                playVideoFromTheInternet(videoLink);
             }else{
                 simpleExoPlayerView.setVisibility(View.INVISIBLE);
                 //TODO Add an image view overlapping the exoPlayerView and make it visible when there is no video , and invisible when there is a video
@@ -91,9 +91,9 @@ public class DetailsActivity extends AppCompatActivity {
             }
         }else {
             videoLink = currentStep.getVideoURL();
+            playVideoFromTheInternet(videoLink);
         }
         //TODO Tide things up
-        playVideoFromTheInternet(videoLink);
     }
 
     @OnClick(R.id.btn_next_step)
@@ -145,6 +145,10 @@ public class DetailsActivity extends AppCompatActivity {
         }else{
             btnNextStep.setBackgroundResource(R.drawable.next);
         }
+    }
+
+    private void fixVisibility(){
+
     }
 
     /**

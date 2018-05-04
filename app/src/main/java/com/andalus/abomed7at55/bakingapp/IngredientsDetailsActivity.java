@@ -16,6 +16,7 @@ import butterknife.ButterKnife;
 public class IngredientsDetailsActivity extends AppCompatActivity {
 
     private ArrayList<Ingredient> ingredientList;
+    private ArrayList<String> data;
     @BindView(R.id.rv_ingredients)
     RecyclerView ingredientsRecyclerView;
 
@@ -23,14 +24,21 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients_details);
-        //TODO Support onSaveInstanceState
 
         ButterKnife.bind(this);
+        if(savedInstanceState == null){
+            ingredientList = StepsActivity.getExportableIngredients();
+            data = getData(ingredientList);
+            ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            IngredientsAdapter adapter = new IngredientsAdapter(getData(ingredientList));
+            ingredientsRecyclerView.setAdapter(adapter);
+        }else{
+            data = savedInstanceState.getStringArrayList(getString(R.string.ingredients));
+            ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            IngredientsAdapter adapter = new IngredientsAdapter(data);
+            ingredientsRecyclerView.setAdapter(adapter);
+        }
 
-        ingredientList = StepsActivity.getExportableIngredients();
-        ingredientsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        IngredientsAdapter adapter = new IngredientsAdapter(getData(ingredientList));
-        ingredientsRecyclerView.setAdapter(adapter);
     }
 
     /**
@@ -45,5 +53,11 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
             result.add(dataSource.get(i).getFullIngredient());
         }
         return result;
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(getString(R.string.ingredients),data);
     }
 }
