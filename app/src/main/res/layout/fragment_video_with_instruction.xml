@@ -42,11 +42,26 @@
         <TextView
             android:id="@+id/tv_view_full_description"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:layout_height="wrap_content"
             tools:text="TextView" />
     </ScrollView>
+
+    <ImageView
+        android:id="@+id/iv_no_video"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/chef" />
 
 
 </android.support.constraint.ConstraintLayout>

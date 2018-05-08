@@ -5,10 +5,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
+import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
@@ -47,6 +49,8 @@ public class DetailsActivity extends AppCompatActivity {
     Button btnNextStep;
     @BindView(R.id.btn_prev_step)
     Button btnPreviousStep;
+    @BindView(R.id.iv_no_video)
+    ImageView ivNoVideo;
 
     private Step currentStep;
     private SimpleExoPlayer player;
@@ -56,7 +60,8 @@ public class DetailsActivity extends AppCompatActivity {
     private TrackSelector selector;
     private ArrayList<Step> allSteps;
     private int currentIndex;
-
+    private int n , i;
+    private long playPosition;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,12 +69,21 @@ public class DetailsActivity extends AppCompatActivity {
         //TODO Support onSaveInstanceState
         ButterKnife.bind(this);
 
-        currentStep = getIntent().getExtras().getParcelable(getString(R.string.keySelectedStep));
+        if(savedInstanceState == null){
+            currentStep = getIntent().getExtras().getParcelable(getString(R.string.keySelectedStep));
+            allSteps = StepsActivity.getExportableSteps();
+            i = Integer.parseInt(currentStep.getId());
+            n = allSteps.size();
+            currentIndex = i;
+        }else{
+            allSteps = savedInstanceState.getParcelableArrayList(getString(R.string.steps));
+            currentIndex = savedInstanceState.getInt(getString(R.string.index));
+            currentStep = allSteps.get(currentIndex);
+            i = currentIndex;
+            n = allSteps.size();
+            playPosition = savedInstanceState.getLong(getString(R.string.play_position),C.TIME_UNSET);
+        }
 
-        allSteps = StepsActivity.getExportableSteps();
-        int i = Integer.parseInt(currentStep.getId());
-        int n = allSteps.size();
-        currentIndex = i;
 
         if(i == n-1){
             btnNextStep.setBackgroundResource(R.drawable.next_grey);
@@ -78,27 +92,13 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         tvCurrentStep.setText(currentStep.getShortDescription());
-
+        checkAndPlay();
         tvShowViewFullDescription.setText(currentStep.getDescription());
-        if(currentStep.getVideoURL().isEmpty()){
-            if(!currentStep.getThumbnailURL().isEmpty()){
-                videoLink = currentStep.getThumbnailURL();
-                playVideoFromTheInternet(videoLink);
-            }else{
-                simpleExoPlayerView.setVisibility(View.INVISIBLE);
-                //TODO Add an image view overlapping the exoPlayerView and make it visible when there is no video , and invisible when there is a video
-                //TODO Run on the emulator and read the error occurring in this case
-            }
-        }else {
-            videoLink = currentStep.getVideoURL();
-            playVideoFromTheInternet(videoLink);
-        }
-        //TODO Tide things up
+
     }
 
     @OnClick(R.id.btn_next_step)
     void onBtnNextClicked(){
-        //TODO fix visibility
         if(currentIndex != allSteps.size()-1){
             currentIndex++;
             if (player != null) {
@@ -106,9 +106,10 @@ public class DetailsActivity extends AppCompatActivity {
                 player = null;
                 selector = null;
             }
-            playVideoFromTheInternet(allSteps.get(currentIndex).getVideoURL());
-            tvShowViewFullDescription.setText(allSteps.get(currentIndex).getDescription());
-            tvCurrentStep.setText(allSteps.get(currentIndex).getShortDescription());
+            currentStep = allSteps.get(currentIndex);
+            checkAndPlay();
+            tvShowViewFullDescription.setText(currentStep.getDescription());
+            tvCurrentStep.setText(currentStep.getShortDescription());
             fixColors();
         }
 
@@ -116,7 +117,6 @@ public class DetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.btn_prev_step)
     void onBtnPreviousClicked(){
-        //TODO fix visibility
         if(currentIndex != 0){
             currentIndex--;
             if (player != null) {
@@ -124,9 +124,10 @@ public class DetailsActivity extends AppCompatActivity {
                 player = null;
                 selector = null;
             }
-            playVideoFromTheInternet(allSteps.get(currentIndex).getVideoURL());
-            tvShowViewFullDescription.setText(allSteps.get(currentIndex).getDescription());
-            tvCurrentStep.setText(allSteps.get(currentIndex).getShortDescription());
+            currentStep = allSteps.get(currentIndex);
+            checkAndPlay();
+            tvShowViewFullDescription.setText(currentStep.getDescription());
+            tvCurrentStep.setText(currentStep.getShortDescription());
             fixColors();
         }
     }
@@ -147,8 +148,30 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void fixVisibility(){
-
+    /**
+     * The main purpose of this method is to fix the visibility when there is no videos to show
+     */
+    private void checkAndPlay(){
+        if(currentStep.getVideoURL().isEmpty()){
+            if(!currentStep.getThumbnailURL().isEmpty()){
+                if(simpleExoPlayerView.getVisibility()==View.INVISIBLE){
+                    simpleExoPlayerView.setVisibility(View.VISIBLE);
+                    ivNoVideo.setVisibility(View.INVISIBLE);
+                }
+                videoLink = currentStep.getThumbnailURL();
+                playVideoFromTheInternet(videoLink);
+            }else{
+                simpleExoPlayerView.setVisibility(View.INVISIBLE);
+                ivNoVideo.setVisibility(View.VISIBLE);
+            }
+        }else {
+            if(simpleExoPlayerView.getVisibility()==View.INVISIBLE){
+                simpleExoPlayerView.setVisibility(View.VISIBLE);
+                ivNoVideo.setVisibility(View.INVISIBLE);
+            }
+            videoLink = currentStep.getVideoURL();
+            playVideoFromTheInternet(videoLink);
+        }
     }
 
     /**
@@ -174,12 +197,23 @@ public class DetailsActivity extends AppCompatActivity {
                 mediaDataSourceFactory,defaultExtractorsFactory,null,null);
 
         player = ExoPlayerFactory.newSimpleInstance(this,selector,loadControl);
+
+        if(playPosition != C.TIME_UNSET) player.seekTo(playPosition);
+
         player.prepare(mediaSource);
 
         simpleExoPlayerView.requestFocus();
         simpleExoPlayerView.setPlayer(player);
 
         player.setPlayWhenReady(true);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList(getString(R.string.steps),allSteps);
+        outState.putInt(getString(R.string.index),currentIndex);
+        outState.putLong(getString(R.string.play_position),player.getCurrentPosition());
     }
 
     @Override

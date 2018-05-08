@@ -6,7 +6,7 @@
     android:theme="@style/myTheme"
     android:layout_height="match_parent"
     tools:context="com.andalus.abomed7at55.bakingapp.DetailsActivity">
-
+    <!--TODO Design for LandScape-->
     <fragment
         android:id="@+id/fragment_video_instructions_in_details_activity"
         android:name="com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions"

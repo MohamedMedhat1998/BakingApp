@@ -30,6 +30,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
+    //TODO Move the ingredients to another activity
     @BindView(R.id.btn_steps_list_ingredients)
     Button btnIngredients;
 

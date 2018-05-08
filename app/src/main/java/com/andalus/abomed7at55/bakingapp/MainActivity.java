@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-
+        //TODO Back Button in all activities
         ButterKnife.bind(this);
         mJsonParser = new JsonParser(this);
         if(savedInstanceState != null){
