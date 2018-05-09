@@ -3,7 +3,9 @@ package com.andalus.abomed7at55.bakingapp;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.Surface;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -65,8 +67,11 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int rotation = getWindowManager().getDefaultDisplay().getRotation();
+        if(rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270){
+            supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+        }
         setContentView(R.layout.activity_details);
-        //TODO Support onSaveInstanceState
         ButterKnife.bind(this);
 
         if(savedInstanceState == null){
@@ -213,7 +218,8 @@ public class DetailsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.steps),allSteps);
         outState.putInt(getString(R.string.index),currentIndex);
-        outState.putLong(getString(R.string.play_position),player.getCurrentPosition());
+        if(player != null)
+            outState.putLong(getString(R.string.play_position),player.getCurrentPosition());
     }
 
     @Override

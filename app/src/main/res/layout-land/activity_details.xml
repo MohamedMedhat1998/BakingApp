@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:theme="@style/myTheme"
+    android:layout_height="match_parent"
+    tools:context="com.andalus.abomed7at55.bakingapp.DetailsActivity">
+    <fragment
+        android:id="@+id/fragment_video_instructions_in_details_activity"
+        android:name="com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toTopOf="@+id/guideline4"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guideline4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.85" />
+
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/guideline4">
+
+        <Button
+            android:id="@+id/btn_prev_step"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:layout_alignParentStart="true"
+            android:background="@drawable/previous"
+            android:layout_alignParentLeft="true" />
+
+
+        <TextView
+            android:id="@+id/tv_current_step"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            tools:text="Current Step" />
+
+        <Button
+            android:id="@+id/btn_next_step"
+            android:layout_alignParentEnd="true"
+            android:layout_width="55dp"
+            android:layout_height="match_parent"
+            android:background="@drawable/next"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout>
+
+
+</android.support.constraint.ConstraintLayout>
