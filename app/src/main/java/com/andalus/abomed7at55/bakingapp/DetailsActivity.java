@@ -1,8 +1,11 @@
 package com.andalus.abomed7at55.bakingapp;
 
 import android.net.Uri;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
 import android.view.Window;
@@ -72,6 +75,11 @@ public class DetailsActivity extends AppCompatActivity {
             supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         }
         setContentView(R.layout.activity_details);
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         ButterKnife.bind(this);
 
         if(savedInstanceState == null){
@@ -230,5 +238,12 @@ public class DetailsActivity extends AppCompatActivity {
             player = null;
             selector = null;
         }
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == ActionBar.DISPLAY_HOME_AS_UP){
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

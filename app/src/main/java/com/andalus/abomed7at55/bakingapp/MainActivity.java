@@ -45,13 +45,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ProgressBar indicatorProgressBar;
     @BindView(R.id.tv_main_no_connection)
     TextView tvNoConnection;
-
+    //TODO add widgets
+    //TODO add unit tests
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
-        //TODO Back Button in all activities
         ButterKnife.bind(this);
         mJsonParser = new JsonParser(this);
         if(savedInstanceState != null){

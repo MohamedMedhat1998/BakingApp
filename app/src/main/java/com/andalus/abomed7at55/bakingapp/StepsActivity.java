@@ -1,11 +1,14 @@
 package com.andalus.abomed7at55.bakingapp;
 
 import android.content.Intent;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.Layout;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -37,6 +40,11 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_steps);
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         ButterKnife.bind(this);
         if(savedInstanceState == null){
             recipes = MainActivity.getExportableRecipes();
@@ -100,5 +108,13 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.recipeSteps),stepsList);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == ActionBar.DISPLAY_HOME_AS_UP){
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

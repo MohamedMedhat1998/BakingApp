@@ -1,9 +1,12 @@
 package com.andalus.abomed7at55.bakingapp;
 
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.MenuItem;
 
 import com.andalus.abomed7at55.bakingapp.Adapters.IngredientsAdapter;
 import com.andalus.abomed7at55.bakingapp.Recipes.Ingredient;
@@ -24,7 +27,11 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ingredients_details);
-
+        try {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
         ButterKnife.bind(this);
         if(savedInstanceState == null){
             ingredientList = StepsActivity.getExportableIngredients();
@@ -59,5 +66,13 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putStringArrayList(getString(R.string.ingredients),data);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId() == ActionBar.DISPLAY_HOME_AS_UP){
+            NavUtils.navigateUpFromSameTask(this);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

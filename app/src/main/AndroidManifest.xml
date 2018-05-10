@@ -4,7 +4,7 @@
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <!--TODO Test on tablet and design for it -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -12,16 +12,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".StepsActivity" />
-        <activity android:name=".IngredientsDetailsActivity" />
-        <activity android:name=".DetailsActivity"></activity>
+        <activity android:name=".StepsActivity" android:parentActivityName=".MainActivity" android:launchMode="singleTop"/>
+        <activity android:name=".IngredientsDetailsActivity" android:parentActivityName=".StepsActivity" android:launchMode="singleTop"/>
+        <activity android:name=".DetailsActivity" android:parentActivityName=".StepsActivity" android:launchMode="singleTop"/>
     </application>
 
 </manifest>
