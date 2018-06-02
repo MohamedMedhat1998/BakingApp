@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     TextView tvNoConnection;
     //TODO add widgets
     //TODO add unit tests
-    //TODO add favourite system
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
