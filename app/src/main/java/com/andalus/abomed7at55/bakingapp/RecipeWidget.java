@@ -15,7 +15,8 @@ public class RecipeWidget extends AppWidgetProvider {
 
         // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
-
+        views.setImageViewResource(R.id.iv_widget_icon1, R.drawable.chef);
+        views.setImageViewResource(R.id.iv_widget_icon2, R.drawable.chef);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
