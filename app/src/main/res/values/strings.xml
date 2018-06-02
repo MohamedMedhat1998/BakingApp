@@ -34,5 +34,7 @@
     <string name="steps">Steps</string>
     <string name="index">index</string>
     <string name="play_position">play_pos</string>
+    <string name="index_on_rotation">index_on_rotation</string>
+    <string name="load_state">loading_state</string>
 
 </resources>

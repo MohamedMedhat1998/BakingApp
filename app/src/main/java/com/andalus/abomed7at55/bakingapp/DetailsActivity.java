@@ -1,10 +1,10 @@
 package com.andalus.abomed7at55.bakingapp;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -23,7 +22,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.source.hls.HlsMediaSource;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
@@ -64,7 +62,7 @@ public class DetailsActivity extends AppCompatActivity {
     private String videoLink;
     private TrackSelector selector;
     private ArrayList<Step> allSteps;
-    private int currentIndex;
+    private int currentIndex, indexOnRotation;
     private int n , i;
     private long playPosition;
     @Override
@@ -91,6 +89,7 @@ public class DetailsActivity extends AppCompatActivity {
         }else{
             allSteps = savedInstanceState.getParcelableArrayList(getString(R.string.steps));
             currentIndex = savedInstanceState.getInt(getString(R.string.index));
+            indexOnRotation = savedInstanceState.getInt(getString(R.string.index_on_rotation));
             currentStep = allSteps.get(currentIndex);
             i = currentIndex;
             n = allSteps.size();
@@ -211,7 +210,8 @@ public class DetailsActivity extends AppCompatActivity {
 
         player = ExoPlayerFactory.newSimpleInstance(this,selector,loadControl);
 
-        if(playPosition != C.TIME_UNSET) player.seekTo(playPosition);
+        if (playPosition != C.TIME_UNSET && indexOnRotation == currentIndex)
+            player.seekTo(playPosition);
 
         player.prepare(mediaSource);
 
@@ -226,8 +226,10 @@ public class DetailsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.steps),allSteps);
         outState.putInt(getString(R.string.index),currentIndex);
-        if(player != null)
+        if (player != null) {
             outState.putLong(getString(R.string.play_position),player.getCurrentPosition());
+            outState.putInt(getString(R.string.index_on_rotation), currentIndex);
+        }
     }
 
     @Override

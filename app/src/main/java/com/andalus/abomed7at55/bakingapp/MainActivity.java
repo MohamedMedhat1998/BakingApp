@@ -10,12 +10,10 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.andalus.abomed7at55.bakingapp.Adapters.RecipeAdapter;
 import com.andalus.abomed7at55.bakingapp.Interfaces.RecipeClickListener;
@@ -34,10 +32,13 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<String> , RecipeClickListener {
 
     private static final int LOADER_ID = 1;
+    private static final int LOAD_FINISHED = 1;
+    private static final int LOAD_NOT_FINISHED = 0;
     private JsonParser mJsonParser;
     private static ArrayList<Recipe> exportableRecipes;
     private ArrayList<Recipe> recipes;
     private RecipeAdapter adapter;
+    private int loadState = LOAD_NOT_FINISHED;
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recipeRecyclerView;
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     TextView tvNoConnection;
     //TODO add widgets
     //TODO add unit tests
+    //TODO add favourite system
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,6 +81,12 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      */
     private void loadSavedData(Bundle savedState){
         recipes = savedState.getParcelableArrayList(getString(R.string.recipeArrayKey));
+        loadState = savedState.getInt(getString(R.string.load_state));
+        if (loadState == LOAD_FINISHED) {
+            indicatorProgressBar.setVisibility(View.INVISIBLE);
+        } else if (loadState == LOAD_NOT_FINISHED) {
+            indicatorProgressBar.setVisibility(View.VISIBLE);
+        }
         if(recipes == null){
             startLoadingData();
             return;
@@ -87,7 +95,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         adapter = new RecipeAdapter(recipes,this);
         recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         recipeRecyclerView.setAdapter(adapter);
-
     }
 
     /**
@@ -117,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onLoadFinished(Loader<String> loader, String data) {
+        loadState = LOAD_FINISHED;
         indicatorProgressBar.setVisibility(View.INVISIBLE);
         try {
             recipes = mJsonParser.getRecipeArrayList(data);
@@ -146,5 +154,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.recipeArrayKey),recipes);
+        outState.putInt(getString(R.string.load_state), loadState);
     }
 }
