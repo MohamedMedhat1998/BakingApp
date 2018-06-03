@@ -38,5 +38,7 @@
     <string name="load_state">loading_state</string>
     <string name="appwidget_text">EXAMPLE</string>
     <string name="add_widget">Add widget</string>
+    <string name="widget_display">Show In Widget</string>
+    <string name="preferences_id">prefs_id</string>
 
 </resources>

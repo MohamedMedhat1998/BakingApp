@@ -1,8 +1,10 @@
 package com.andalus.abomed7at55.bakingapp;
 
+import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
+import android.content.Intent;
 import android.widget.RemoteViews;
 
 /**
@@ -17,6 +19,11 @@ public class RecipeWidget extends AppWidgetProvider {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget);
         views.setImageViewResource(R.id.iv_widget_icon1, R.drawable.chef);
         views.setImageViewResource(R.id.iv_widget_icon2, R.drawable.chef);
+
+        Intent i = new Intent(context, MainActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, i, 0);
+
+        views.setOnClickPendingIntent(R.id.widget_layout, pendingIntent);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }

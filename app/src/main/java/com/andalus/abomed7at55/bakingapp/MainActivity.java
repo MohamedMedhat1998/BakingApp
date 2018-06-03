@@ -2,14 +2,17 @@ package com.andalus.abomed7at55.bakingapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -39,6 +42,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private ArrayList<Recipe> recipes;
     private RecipeAdapter adapter;
     private int loadState = LOAD_NOT_FINISHED;
+    private SharedPreferences sharedPreferences;
+    private String initialId;
 
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recipeRecyclerView;
@@ -46,14 +51,20 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     ProgressBar indicatorProgressBar;
     @BindView(R.id.tv_main_no_connection)
     TextView tvNoConnection;
-    //TODO add widgets
+
+    //TODO complete widgets
     //TODO add unit tests
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+
         ButterKnife.bind(this);
+        //TODO continue this
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        initialId = sharedPreferences.getString(getString(R.string.preferences_id), "");
+
         mJsonParser = new JsonParser(this);
         if(savedInstanceState != null){
             loadSavedData(savedInstanceState);
@@ -128,6 +139,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         try {
             recipes = mJsonParser.getRecipeArrayList(data);
             exportableRecipes = recipes;
+            if (initialId.isEmpty()) {
+                initialId = recipes.get(0).getId();
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.putString(getString(R.string.preferences_id), initialId);
+                editor.apply();
+            }
+            Log.d("IDDD", initialId);
             adapter = new RecipeAdapter(recipes,this);
             recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             recipeRecyclerView.setAdapter(adapter);

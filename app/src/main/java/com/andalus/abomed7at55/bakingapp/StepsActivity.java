@@ -1,16 +1,14 @@
 package com.andalus.abomed7at55.bakingapp;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Layout;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.Adapters.StepsAdapter;
 import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
@@ -116,5 +114,14 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             NavUtils.navigateUpFromSameTask(this);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * This method is used to retrieve the id of the selected recipe
+     *
+     * @return String id of the selected recipe
+     */
+    public static String getId() {
+        return selectedRecipe.getId();
     }
 }
