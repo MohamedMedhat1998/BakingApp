@@ -40,5 +40,9 @@
     <string name="add_widget">Add widget</string>
     <string name="widget_display">Show In Widget</string>
     <string name="preferences_id">prefs_id</string>
+    <string name="preferences_label">prefs_label</string>
+    <string name="preferences_body">prefs_body</string>
+    <string name="default_widget_label">No Recipe Is Selected</string>
+    <string name="default_widget_body">Please open the application and choose a desired recipe</string>
 
 </resources>

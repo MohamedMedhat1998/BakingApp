@@ -1,5 +1,7 @@
 package com.andalus.abomed7at55.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -27,12 +29,14 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.ch_display_in_widget)
     CheckBox displayInWidget;
-    private SharedPreferences sharedPreferences;
-    private boolean isPreference;
-
     @BindView(R.id.rv_ingredients)
     RecyclerView ingredientsRecyclerView;
-    private String id;
+
+    private AppWidgetManager myAppWidgetManager;
+    private int ids[];
+
+    private SharedPreferences sharedPreferences;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,8 +44,12 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ingredients_details);
 
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        id = sharedPreferences.getString(getString(R.string.preferences_id), "");
-        isPreference = id.equals(StepsActivity.getId());
+        editor = sharedPreferences.edit();
+        String id = sharedPreferences.getString(getString(R.string.preferences_id), "");
+        boolean isPreference = id.equals(StepsActivity.getId());
+
+        myAppWidgetManager = AppWidgetManager.getInstance(this);
+        ids = myAppWidgetManager.getAppWidgetIds(new ComponentName(this, RecipeWidget.class));
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -52,6 +60,7 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
 
         if (isPreference) {
             displayInWidget.setChecked(true);
+            updateEverything();
         } else {
             displayInWidget.setChecked(false);
         }
@@ -100,10 +109,8 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.ch_display_in_widget)
     void onDisplayInWidgetChanged() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
         if (displayInWidget.isChecked()) {
-            editor.putString(getString(R.string.preferences_id), StepsActivity.getId());
-            editor.apply();
+            updateEverything();
         } else {
             editor.putString(getString(R.string.preferences_id), "");
             editor.apply();
@@ -114,9 +121,23 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         if (sharedPreferences.getString(getString(R.string.preferences_id), "").isEmpty()) {
-            SharedPreferences.Editor editor = sharedPreferences.edit();
-            editor.putString(getString(R.string.preferences_id), StepsActivity.getId());
-            editor.apply();
+            updateEverything();
+        }
+    }
+
+    /**
+     * This method primary updates the text to be displayed in the widget
+     */
+    private void updateEverything() {
+        editor.putString(getString(R.string.preferences_id), StepsActivity.getId());
+        editor.putString(getString(R.string.preferences_label),
+                MainActivity.getExportableRecipes().get(Integer.parseInt(StepsActivity.getId()) - 1).getName());
+        editor.putString(getString(R.string.preferences_body),
+                MainActivity.getExportableRecipes().get(Integer.parseInt(StepsActivity.getId()) - 1).getOneTextIngredients());
+        editor.apply();
+        int n = ids.length;
+        for (int i = 0; i < n; i++) {
+            RecipeWidget.updateAppWidget(getApplicationContext(), myAppWidgetManager, i);
         }
     }
 }

@@ -33,7 +33,7 @@
                 android:layout_weight="1"
                 android:background="#0000"
                 android:gravity="center"
-                android:text="Label"
+                android:text="@string/default_widget_label"
                 android:textColor="@color/black"
                 android:theme="@style/TextLabel" />
 
@@ -54,7 +54,7 @@
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/widget_body_margin"
             android:layout_marginTop="@dimen/widget_body_margin"
-            android:text="ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            android:text="@string/default_widget_body"
             android:textColor="@color/white" />
     </LinearLayout>
 

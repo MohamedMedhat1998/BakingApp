@@ -12,7 +12,6 @@ import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.ProgressBar;
@@ -145,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                 editor.putString(getString(R.string.preferences_id), initialId);
                 editor.apply();
             }
-            Log.d("IDDD", initialId);
             adapter = new RecipeAdapter(recipes,this);
             recipeRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             recipeRecyclerView.setAdapter(adapter);
