@@ -53,6 +53,7 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
 
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(MainActivity.getExportableRecipes().get(Integer.parseInt(StepsActivity.getId()) - 1).getName());
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -135,9 +136,10 @@ public class IngredientsDetailsActivity extends AppCompatActivity {
         editor.putString(getString(R.string.preferences_body),
                 MainActivity.getExportableRecipes().get(Integer.parseInt(StepsActivity.getId()) - 1).getOneTextIngredients());
         editor.apply();
-        int n = ids.length;
-        for (int i = 0; i < n; i++) {
-            RecipeWidget.updateAppWidget(getApplicationContext(), myAppWidgetManager, i);
-        }
+        RecipeWidget.customUpdate(getApplicationContext(),
+                myAppWidgetManager,
+                ids,
+                sharedPreferences.getString(getString(R.string.preferences_label), getString(R.string.default_widget_label)),
+                sharedPreferences.getString(getString(R.string.preferences_body), getString(R.string.default_widget_body)));
     }
 }

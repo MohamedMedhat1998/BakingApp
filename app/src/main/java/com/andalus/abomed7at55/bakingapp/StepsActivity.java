@@ -40,6 +40,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         setContentView(R.layout.activity_steps);
         try {
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(MainActivity.getExportableRecipes().get(Integer.parseInt(getIntent().getExtras().getString(getString(R.string.recipeId))) - 1).getName());
         }catch (Exception e){
             e.printStackTrace();
         }

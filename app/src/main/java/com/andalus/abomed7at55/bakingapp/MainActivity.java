@@ -1,5 +1,7 @@
 package com.andalus.abomed7at55.bakingapp;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -51,8 +53,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.tv_main_no_connection)
     TextView tvNoConnection;
 
-    //TODO complete widgets
     //TODO add unit tests
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +65,11 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         //TODO continue this
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         initialId = sharedPreferences.getString(getString(R.string.preferences_id), "");
+        RecipeWidget.customUpdate(getApplicationContext(),
+                AppWidgetManager.getInstance(this),
+                AppWidgetManager.getInstance(this).getAppWidgetIds(new ComponentName(this, RecipeWidget.class)),
+                sharedPreferences.getString(getString(R.string.preferences_label), getString(R.string.default_widget_label)),
+                sharedPreferences.getString(getString(R.string.preferences_body), getString(R.string.default_widget_body)));
 
         mJsonParser = new JsonParser(this);
         if(savedInstanceState != null){
