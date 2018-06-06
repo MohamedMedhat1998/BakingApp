@@ -62,7 +62,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         setContentView(R.layout.activity_main);
 
         ButterKnife.bind(this);
-        //TODO continue this
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         initialId = sharedPreferences.getString(getString(R.string.preferences_id), "");
         RecipeWidget.customUpdate(getApplicationContext(),

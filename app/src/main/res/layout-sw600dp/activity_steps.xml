@@ -15,9 +15,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <fragment
+    <FrameLayout
         android:id="@+id/fragment_video_instructions_in_details_activity"
-        android:name="com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions"
         android:layout_width="0dp"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"

@@ -2,21 +2,29 @@ package com.andalus.abomed7at55.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.CheckBox;
 
+import com.andalus.abomed7at55.bakingapp.Adapters.IngredientsAdapter;
 import com.andalus.abomed7at55.bakingapp.Adapters.StepsAdapter;
 import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
 import com.andalus.abomed7at55.bakingapp.Recipes.Ingredient;
 import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
+import com.andalus.abomed7at55.bakingapp.UI.FragmentIngredients;
+import com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -28,6 +36,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private static Recipe selectedRecipe;
     private static ArrayList<Ingredient> exportableIngredients;
     private ArrayList<Step> stepsList;
+    private boolean isTablet = false;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -45,6 +54,31 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             e.printStackTrace();
         }
         ButterKnife.bind(this);
+
+        if(findViewById(R.id.fragment_video_instructions_in_details_activity)!= null){
+            isTablet = true;
+            FragmentIngredients fragmentIngredients = new FragmentIngredients();
+            fragmentIngredients.setFlag(FragmentIngredients.FLAG_TABLET);
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients);
+            fragmentTransaction.commit();
+            //--------------This Part of code is a try to handle multi-pane-----------------
+            RecyclerView rvIngredients = findViewById(R.id.rv_ingredients);
+            if(rvIngredients == null){
+                Log.d("Recycler","NULL");
+            }
+            /*ArrayList<String> data = new ArrayList<>();
+            data.add("A");
+            data.add("B");
+            data.add("C");
+            data.add("D");
+            IngredientsAdapter adapter = new IngredientsAdapter(data);
+            rvIngredients.setLayoutManager(new LinearLayoutManager(this));
+            rvIngredients.setAdapter(adapter);*/
+            //-----------------------------------------------------------------------------
+        }
+
         if(savedInstanceState == null){
             recipes = MainActivity.getExportableRecipes();
             selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
@@ -63,10 +97,21 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
 
     }
+    //----------------------------------
+
+    //----------------------------------
 
     @OnClick(R.id.btn_steps_list_ingredients)
     void openIngredientsList(){
-        startActivity(new Intent(this,IngredientsDetailsActivity.class));
+        if(!isTablet){
+            startActivity(new Intent(this,IngredientsDetailsActivity.class));
+        }else{
+            FragmentIngredients fragmentIngredients = new FragmentIngredients();
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients)
+                    .commit();
+        }
     }
 
     /**
@@ -98,9 +143,11 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     @Override
     public void onStepClicked(Step selectedStep) {
-        Intent i = new Intent(this,DetailsActivity.class);
-        i.putExtra(getString(R.string.keySelectedStep),selectedStep);
-        startActivity(i);
+        if(!isTablet){
+            Intent i = new Intent(this,DetailsActivity.class);
+            i.putExtra(getString(R.string.keySelectedStep),selectedStep);
+            startActivity(i);
+        }
     }
 
     @Override
