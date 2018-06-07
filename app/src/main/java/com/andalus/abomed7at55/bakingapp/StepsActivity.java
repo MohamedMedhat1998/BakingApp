@@ -9,12 +9,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
-import android.widget.CheckBox;
 
-import com.andalus.abomed7at55.bakingapp.Adapters.IngredientsAdapter;
 import com.andalus.abomed7at55.bakingapp.Adapters.StepsAdapter;
 import com.andalus.abomed7at55.bakingapp.Interfaces.StepClickListener;
 import com.andalus.abomed7at55.bakingapp.Recipes.Ingredient;
@@ -24,7 +21,6 @@ import com.andalus.abomed7at55.bakingapp.UI.FragmentIngredients;
 import com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,30 +51,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         }
         ButterKnife.bind(this);
 
-        if(findViewById(R.id.fragment_video_instructions_in_details_activity)!= null){
-            isTablet = true;
-            FragmentIngredients fragmentIngredients = new FragmentIngredients();
-            fragmentIngredients.setFlag(FragmentIngredients.FLAG_TABLET);
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients);
-            fragmentTransaction.commit();
-            //--------------This Part of code is a try to handle multi-pane-----------------
-            RecyclerView rvIngredients = findViewById(R.id.rv_ingredients);
-            if(rvIngredients == null){
-                Log.d("Recycler","NULL");
-            }
-            /*ArrayList<String> data = new ArrayList<>();
-            data.add("A");
-            data.add("B");
-            data.add("C");
-            data.add("D");
-            IngredientsAdapter adapter = new IngredientsAdapter(data);
-            rvIngredients.setLayoutManager(new LinearLayoutManager(this));
-            rvIngredients.setAdapter(adapter);*/
-            //-----------------------------------------------------------------------------
-        }
-
         if(savedInstanceState == null){
             recipes = MainActivity.getExportableRecipes();
             selectedRecipe = recipes.get(convertId(getIntent().getExtras().getString(getString(R.string.recipeId))));
@@ -95,22 +67,38 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             stepListRecyclerView.setAdapter(adapter);
         }
 
+        setUpDefaultScreenForTablets();
 
     }
-    //----------------------------------
 
-    //----------------------------------
+    /**
+     * This method is responsible for making the app suitable for tablets
+     */
+    private void setUpDefaultScreenForTablets(){
+        if(findViewById(R.id.fragment_video_instructions_in_details_activity)!= null){
+            isTablet = true;
+            FragmentIngredients fragmentIngredients = new FragmentIngredients();
+
+            fragmentIngredients.setFlag(FragmentIngredients.FLAG_TABLET);
+            fragmentIngredients.setData(selectedRecipe.getDataAsArrayListOfStrings());
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients);
+            fragmentTransaction.commit();
+
+        }
+    }
 
     @OnClick(R.id.btn_steps_list_ingredients)
     void openIngredientsList(){
         if(!isTablet){
             startActivity(new Intent(this,IngredientsDetailsActivity.class));
         }else{
-            FragmentIngredients fragmentIngredients = new FragmentIngredients();
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients)
-                    .commit();
+            //TODO fix this error (find another way to know whether the fragment is displayed or not)
+            if(findViewById(R.id.fragment_ingredient_layout)!= null){
+                setUpDefaultScreenForTablets();
+            }
         }
     }
 
@@ -147,6 +135,9 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             Intent i = new Intent(this,DetailsActivity.class);
             i.putExtra(getString(R.string.keySelectedStep),selectedStep);
             startActivity(i);
+        }else{
+            FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
+
         }
     }
 

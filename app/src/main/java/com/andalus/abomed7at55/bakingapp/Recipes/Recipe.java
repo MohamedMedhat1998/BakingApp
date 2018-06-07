@@ -58,6 +58,19 @@ public class Recipe implements Parcelable{
         return ingredients;
     }
 
+    /**
+     * This is a special method to extract the data from the ingredient list
+     * @return Array list of string
+     */
+    public ArrayList<String> getDataAsArrayListOfStrings(){
+        ArrayList<String> result = new ArrayList<>();
+        int n = getIngredients().size();
+        for(int i = 0 ; i < n ; i++){
+            result.add(getIngredients().get(i).getFullIngredient());
+        }
+        return result;
+    }
+
     public String getOneTextIngredients() {
         StringBuilder full = new StringBuilder();
         int n = ingredients.size();
