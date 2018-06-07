@@ -39,7 +39,6 @@ public class FragmentIngredients extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Log.d("Fragment","Created");
         final View view = inflater.inflate(R.layout.fragment_ingredients,container,false);
         if(flag==FLAG_TABLET){
             RecyclerView recyclerView = view.findViewById(R.id.rv_ingredients);

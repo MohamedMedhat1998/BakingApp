@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -27,6 +28,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class StepsActivity extends AppCompatActivity implements StepClickListener {
+
+    private static final String INGREDIENT_FRAGMENT_TAG = "ingredient_Tag";
 
     private ArrayList<Recipe> recipes;
     private static Recipe selectedRecipe;
@@ -84,7 +87,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients);
+            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients,INGREDIENT_FRAGMENT_TAG);
+
             fragmentTransaction.commit();
 
         }
@@ -95,8 +99,9 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         if(!isTablet){
             startActivity(new Intent(this,IngredientsDetailsActivity.class));
         }else{
-            //TODO fix this error (find another way to know whether the fragment is displayed or not)
-            if(findViewById(R.id.fragment_ingredient_layout)!= null){
+            FragmentIngredients fragmentIngredients =
+                    (FragmentIngredients) getSupportFragmentManager().findFragmentByTag(INGREDIENT_FRAGMENT_TAG);
+            if(!fragmentIngredients.isVisible()){
                 setUpDefaultScreenForTablets();
             }
         }
