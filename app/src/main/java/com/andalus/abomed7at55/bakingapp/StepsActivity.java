@@ -32,12 +32,24 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     private static final String INGREDIENT_FRAGMENT_TAG = "ingredient_Tag";
     private static final String VIDEO_FRAGMENT_TAG = "video_Tag";
+    private static final String IS_TABLET_KEY = "is_tablet_state_key";
+    private static final String DISPLAYED_FRAGMENT_KEY = "current_fragment";
+    private static final String RECIPE_KEY = "recipe_key";
+    private static final String LAST_SEEN_STEP_KEY = "last_seen_step_key";
+
+    private static final int TABLET = 5;
+    private static final int NOT_TABLET = 10;
+    private static final int FRAGMENT_INGREDIENTS = 15;
+    private static final int FRAGMENT_DETAILS = 20;
 
     private ArrayList<Recipe> recipes;
     private static Recipe selectedRecipe;
     private static ArrayList<Ingredient> exportableIngredients;
     private ArrayList<Step> stepsList;
     private boolean isTablet = false;
+    private int isTabletState = NOT_TABLET;
+    private int currentDisplayedFragment;
+    private Step lastSeenStep;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -65,14 +77,31 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             StepsAdapter adapter = new StepsAdapter(stepsList,this);
             stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             stepListRecyclerView.setAdapter(adapter);
+
+            setUpDefaultScreenForTablets();
         }else{
+            isTabletState = savedInstanceState.getInt(IS_TABLET_KEY);
+            if(isTabletState == TABLET){
+                isTablet = true;
+            }
             stepsList = savedInstanceState.getParcelableArrayList(getString(R.string.recipeSteps));
             StepsAdapter adapter = new StepsAdapter(stepsList,this);
             stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             stepListRecyclerView.setAdapter(adapter);
+            if(isTablet){
+                selectedRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
+                currentDisplayedFragment = savedInstanceState.getInt(DISPLAYED_FRAGMENT_KEY);
+                lastSeenStep = savedInstanceState.getParcelable(LAST_SEEN_STEP_KEY);
+                if(currentDisplayedFragment == FRAGMENT_INGREDIENTS){
+                    setUpDefaultScreenForTablets();
+                }else if(currentDisplayedFragment == FRAGMENT_DETAILS){
+                    Log.d("LOADED FROM","FRAGMENT_DETAILS");
+                    Log.d("Last Seen Step",lastSeenStep.getShortDescription());
+                    displayDetailsFragment(lastSeenStep);
+                }
+            }
         }
         //TODO save state in case of tablet
-        setUpDefaultScreenForTablets();
 
     }
 
@@ -82,6 +111,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private void setUpDefaultScreenForTablets(){
         if(findViewById(R.id.fragment_details_container_tablet)!= null){
             isTablet = true;
+            isTabletState = TABLET;
             FragmentIngredients fragmentIngredients = new FragmentIngredients();
 
             fragmentIngredients.setFlag(FragmentIngredients.FLAG_TABLET);
@@ -90,7 +120,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentIngredients,INGREDIENT_FRAGMENT_TAG);
-
+            currentDisplayedFragment = FRAGMENT_INGREDIENTS;
             fragmentTransaction.commit();
 
         }
@@ -143,30 +173,54 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             i.putExtra(getString(R.string.keySelectedStep),selectedStep);
             startActivity(i);
         }else{
-            FragmentVideoWithInstructions tempFragment =
-                    (FragmentVideoWithInstructions) getSupportFragmentManager().findFragmentByTag(VIDEO_FRAGMENT_TAG);
-            if(tempFragment != null){
-                if(tempFragment.isVisible()){
-                    tempFragment.updateContent(selectedStep);
-                }
-            }else {
-                FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                fragmentVideoWithInstructions.setFlag(FragmentVideoWithInstructions.FLAG_TABLET);
-                fragmentVideoWithInstructions.setSelectedStep(selectedStep);
-
-                fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
-                fragmentTransaction.commit();
-            }
+            displayDetailsFragment(selectedStep);
         }
+    }
+
+    /**
+     * This method displays the fragment of the details. The content of the displayed fragment is based on the passed step
+     * @param selectedStep the step from which the fragment will get its content
+     */
+    private void displayDetailsFragment(Step selectedStep){
+        Log.d("Location","Start");
+        FragmentVideoWithInstructions tempFragment =
+                (FragmentVideoWithInstructions) getSupportFragmentManager().findFragmentByTag(VIDEO_FRAGMENT_TAG);
+        if(tempFragment != null){
+            Log.d("Location","NOT Null");
+            if(tempFragment.isVisible()){
+                tempFragment.updateContent(selectedStep);
+                Log.d("Location","Visible");
+            }
+        }else {
+            Log.d("Location","else");
+            FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+            fragmentVideoWithInstructions.setFlag(FragmentVideoWithInstructions.FLAG_TABLET);
+            fragmentVideoWithInstructions.setSelectedStep(selectedStep);
+
+            fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        }
+        currentDisplayedFragment = FRAGMENT_DETAILS;
+        lastSeenStep = selectedStep;
     }
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.recipeSteps),stepsList);
+        if(isTablet){
+            outState.putInt(IS_TABLET_KEY,isTabletState);
+            outState.putInt(DISPLAYED_FRAGMENT_KEY,currentDisplayedFragment);
+            outState.putParcelable(RECIPE_KEY,selectedRecipe);
+            outState.putParcelable(LAST_SEEN_STEP_KEY,lastSeenStep);
+            //TODO fix this error
+            for (Fragment fragment:getSupportFragmentManager().getFragments()) {
+                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            }
+        }
     }
 
     @Override

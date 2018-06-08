@@ -156,4 +156,16 @@ public class FragmentVideoWithInstructions extends Fragment {
 
         player.setPlayWhenReady(true);
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if(mFlag == FLAG_TABLET){
+            if (player != null) {
+                player.release();
+                player = null;
+                selector = null;
+            }
+        }
+    }
 }
