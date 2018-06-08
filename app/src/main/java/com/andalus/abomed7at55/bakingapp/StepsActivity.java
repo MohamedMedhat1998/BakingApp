@@ -147,7 +147,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                     (FragmentVideoWithInstructions) getSupportFragmentManager().findFragmentByTag(VIDEO_FRAGMENT_TAG);
             if(tempFragment != null){
                 if(tempFragment.isVisible()){
-                    tempFragment.updateContent(selectedStep.getDescription());
+                    tempFragment.updateContent(selectedStep);
                 }
             }else {
                 FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
@@ -159,7 +159,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
                 fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
                 fragmentTransaction.commit();
-                //TODO set the properties you want to display in the tablet layout from the fragment class
             }
         }
     }
