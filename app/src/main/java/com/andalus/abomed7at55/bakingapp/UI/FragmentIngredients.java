@@ -67,9 +67,6 @@ public class FragmentIngredients extends Fragment{
         return view;
     }
 
-    public int getFlag() {
-        return flag;
-    }
 
     public void setFlag(int mFlag) {
         this.flag = mFlag;

@@ -2,6 +2,7 @@ package com.andalus.abomed7at55.bakingapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.NavUtils;
@@ -30,6 +31,7 @@ import butterknife.OnClick;
 public class StepsActivity extends AppCompatActivity implements StepClickListener {
 
     private static final String INGREDIENT_FRAGMENT_TAG = "ingredient_Tag";
+    private static final String VIDEO_FRAGMENT_TAG = "video_Tag";
 
     private ArrayList<Recipe> recipes;
     private static Recipe selectedRecipe;
@@ -69,7 +71,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
             stepListRecyclerView.setAdapter(adapter);
         }
-
+        //TODO save state in case of tablet
         setUpDefaultScreenForTablets();
 
     }
@@ -78,7 +80,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
      * This method is responsible for making the app suitable for tablets
      */
     private void setUpDefaultScreenForTablets(){
-        if(findViewById(R.id.fragment_video_instructions_in_details_activity)!= null){
+        if(findViewById(R.id.fragment_details_container_tablet)!= null){
             isTablet = true;
             FragmentIngredients fragmentIngredients = new FragmentIngredients();
 
@@ -87,7 +89,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.fragment_video_instructions_in_details_activity,fragmentIngredients,INGREDIENT_FRAGMENT_TAG);
+            fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentIngredients,INGREDIENT_FRAGMENT_TAG);
 
             fragmentTransaction.commit();
 
@@ -101,7 +103,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         }else{
             FragmentIngredients fragmentIngredients =
                     (FragmentIngredients) getSupportFragmentManager().findFragmentByTag(INGREDIENT_FRAGMENT_TAG);
-            if(!fragmentIngredients.isVisible()){
+            if(fragmentIngredients == null || !fragmentIngredients.isVisible()){
                 setUpDefaultScreenForTablets();
             }
         }
@@ -141,8 +143,24 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             i.putExtra(getString(R.string.keySelectedStep),selectedStep);
             startActivity(i);
         }else{
-            FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
+            FragmentVideoWithInstructions tempFragment =
+                    (FragmentVideoWithInstructions) getSupportFragmentManager().findFragmentByTag(VIDEO_FRAGMENT_TAG);
+            if(tempFragment != null){
+                if(tempFragment.isVisible()){
+                    tempFragment.updateContent(selectedStep.getDescription());
+                }
+            }else {
+                FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
+                fragmentVideoWithInstructions.setFlag(FragmentVideoWithInstructions.FLAG_TABLET);
+                fragmentVideoWithInstructions.setSelectedStep(selectedStep);
+
+                fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
+                fragmentTransaction.commit();
+                //TODO set the properties you want to display in the tablet layout from the fragment class
+            }
         }
     }
 
