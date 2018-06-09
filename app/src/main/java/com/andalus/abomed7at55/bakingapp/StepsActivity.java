@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -37,6 +38,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private static final String LAST_SEEN_STEP_KEY = "last_seen_step_key";
     private static final String ROTATION_ID_KEY = "id_on_rotation";
     private static final String PLAY_PAUSE_STATE_KEY = "pp_state";
+    private static final String LAYOUT_MANAGER_KEY = "LMK";
 
     private static final int TABLET = 5;
     private static final int NOT_TABLET = 10;
@@ -54,6 +56,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private static long currentPosition;
     private String rotationId;
     private static int canPlayWhenReady;
+    private LinearLayoutManager mLinearLayoutManager;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -71,6 +74,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             e.printStackTrace();
         }
         ButterKnife.bind(this);
+        mLinearLayoutManager = new LinearLayoutManager(this);
 
         if(savedInstanceState == null){
             recipes = MainActivity.getExportableRecipes();
@@ -79,7 +83,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             stepsList = selectedRecipe.getSteps();
             stepListRecyclerView.setNestedScrollingEnabled(false);
             StepsAdapter adapter = new StepsAdapter(stepsList,this);
-            stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            stepListRecyclerView.setLayoutManager(mLinearLayoutManager);
             stepListRecyclerView.setAdapter(adapter);
 
             setUpDefaultScreenForTablets();
@@ -90,9 +94,11 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             }
             stepsList = savedInstanceState.getParcelableArrayList(getString(R.string.recipeSteps));
             StepsAdapter adapter = new StepsAdapter(stepsList,this);
-            stepListRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+            mLinearLayoutManager.onRestoreInstanceState(savedInstanceState.getParcelable(LAYOUT_MANAGER_KEY));
+            stepListRecyclerView.setLayoutManager(mLinearLayoutManager);
             stepListRecyclerView.setAdapter(adapter);
             if(isTablet){
+
                 selectedRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
                 currentDisplayedFragment = savedInstanceState.getInt(DISPLAYED_FRAGMENT_KEY);
                 lastSeenStep = savedInstanceState.getParcelable(LAST_SEEN_STEP_KEY);
@@ -223,12 +229,15 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             outState.putInt(IS_TABLET_KEY,isTabletState);
             outState.putInt(DISPLAYED_FRAGMENT_KEY,currentDisplayedFragment);
             outState.putParcelable(RECIPE_KEY,selectedRecipe);
-            outState.putParcelable(LAST_SEEN_STEP_KEY,lastSeenStep);
-            outState.putLong(getString(R.string.play_position),currentPosition);
-            outState.putString(ROTATION_ID_KEY,lastSeenStep.getId());
-            outState.putInt(PLAY_PAUSE_STATE_KEY,canPlayWhenReady);
-            for (Fragment fragment:getSupportFragmentManager().getFragments()) {
-                getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+            outState.putParcelable(LAYOUT_MANAGER_KEY,mLinearLayoutManager.onSaveInstanceState());
+            if(currentDisplayedFragment == FRAGMENT_DETAILS){
+                outState.putParcelable(LAST_SEEN_STEP_KEY,lastSeenStep);
+                outState.putLong(getString(R.string.play_position),currentPosition);
+                outState.putString(ROTATION_ID_KEY,lastSeenStep.getId());
+                outState.putInt(PLAY_PAUSE_STATE_KEY,canPlayWhenReady);
+                for (Fragment fragment:getSupportFragmentManager().getFragments()) {
+                    getSupportFragmentManager().beginTransaction().remove(fragment).commit();
+                }
             }
             super.onSaveInstanceState(outState);
         }
