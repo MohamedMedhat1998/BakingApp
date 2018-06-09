@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,9 +80,7 @@ public class FragmentVideoWithInstructions extends Fragment {
             simpleExoPlayerView = view.findViewById(R.id.simple_exo_player);
             ivNoVideo = view.findViewById(R.id.iv_no_video);
             checkAndPlay(view.getContext());
-            if(savedInstanceState != null){
-                Log.d("State","Loaded");
-            }
+
         }
 
         return view;
@@ -187,10 +184,8 @@ public class FragmentVideoWithInstructions extends Fragment {
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                 if(playWhenReady){
-                    Log.d("Play state","We are playing");
                     StepsActivity.setCanPlayWhenReady(PLAY_WHEN_READY);
                 }else {
-                    Log.d("Play state","We are paused");
                     StepsActivity.setCanPlayWhenReady(DO_NOT_PLAY_WHEN_READY);
                 }
             }
@@ -226,12 +221,9 @@ public class FragmentVideoWithInstructions extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        Log.d("State","onPause");
         if(mFlag == FLAG_TABLET){
             if (player != null) {
                 StepsActivity.setCurrentPosition(player.getCurrentPosition());
-                Log.d("current pos st frag",player.getCurrentPosition() +"");
-
                 player.release();
                 player = null;
                 selector = null;
@@ -242,7 +234,6 @@ public class FragmentVideoWithInstructions extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        Log.d("State","onDestroyView");
         if(mFlag == FLAG_TABLET){
             if (player != null) {
                 player.release();
@@ -255,7 +246,6 @@ public class FragmentVideoWithInstructions extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        Log.d("State","onDetach");
         if(mFlag == FLAG_TABLET){
             if (player != null) {
                 player.release();
@@ -268,7 +258,6 @@ public class FragmentVideoWithInstructions extends Fragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        Log.d("State","Saved");
     }
 
     public void setPlayPosition(long playPosition) {

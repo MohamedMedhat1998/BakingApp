@@ -10,7 +10,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Button;
 
@@ -99,7 +98,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 lastSeenStep = savedInstanceState.getParcelable(LAST_SEEN_STEP_KEY);
 
                 currentPosition = savedInstanceState.getLong(getString(R.string.play_position));
-                Log.d("Current Pos Steps Act",currentPosition + "");
 
                 rotationId = savedInstanceState.getString(ROTATION_ID_KEY);
                 canPlayWhenReady = savedInstanceState.getInt(PLAY_PAUSE_STATE_KEY);
@@ -107,8 +105,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 if(currentDisplayedFragment == FRAGMENT_INGREDIENTS){
                     setUpDefaultScreenForTablets();
                 }else if(currentDisplayedFragment == FRAGMENT_DETAILS){
-                    Log.d("LOADED FROM","FRAGMENT_DETAILS");
-                    Log.d("Last Seen Step",lastSeenStep.getShortDescription());
                     displayDetailsFragment(lastSeenStep);
                 }
             }
@@ -193,20 +189,16 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
      * @param selectedStep the step from which the fragment will get its content
      */
     private void displayDetailsFragment(Step selectedStep){
-        Log.d("Location","Start");
         FragmentVideoWithInstructions tempFragment =
                 (FragmentVideoWithInstructions) getSupportFragmentManager().findFragmentByTag(VIDEO_FRAGMENT_TAG);
         if(tempFragment != null){
-            Log.d("Location","NOT Null");
             if(tempFragment.isVisible()){
                 tempFragment.setPlayPosition(currentPosition);
                 tempFragment.setIdOnRotation(rotationId);
                 tempFragment.setShouldPlayWhenReady(canPlayWhenReady);
                 tempFragment.updateContent(selectedStep);
-                Log.d("Location","Visible");
             }
         }else {
-            Log.d("Location","else");
             FragmentVideoWithInstructions fragmentVideoWithInstructions = new FragmentVideoWithInstructions();
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -235,7 +227,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             outState.putLong(getString(R.string.play_position),currentPosition);
             outState.putString(ROTATION_ID_KEY,lastSeenStep.getId());
             outState.putInt(PLAY_PAUSE_STATE_KEY,canPlayWhenReady);
-            Log.d("current pos sv st act",currentPosition + "");
             for (Fragment fragment:getSupportFragmentManager().getFragments()) {
                 getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
