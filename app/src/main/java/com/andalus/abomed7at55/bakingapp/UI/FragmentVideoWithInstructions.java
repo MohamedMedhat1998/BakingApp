@@ -18,15 +18,20 @@ import com.andalus.abomed7at55.bakingapp.Recipes.Step;
 import com.andalus.abomed7at55.bakingapp.StepsActivity;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
@@ -44,6 +49,9 @@ public class FragmentVideoWithInstructions extends Fragment {
 
     public static final int FLAG_NORMAL = 1;
     public static final int FLAG_TABLET = 10;
+    public static final int PLAY_WHEN_READY =50;
+    public static final int DO_NOT_PLAY_WHEN_READY =100;
+
     private int mFlag = FLAG_NORMAL;
     private Step currentStep;
 
@@ -59,6 +67,7 @@ public class FragmentVideoWithInstructions extends Fragment {
     private View view;
     private long playPosition;
     private String idOnRotation;
+    private int shouldPlayWhenReady = DO_NOT_PLAY_WHEN_READY;
 
     @Nullable
     @Override
@@ -159,7 +168,45 @@ public class FragmentVideoWithInstructions extends Fragment {
 
         player = ExoPlayerFactory.newSimpleInstance(context,selector,loadControl);
 
-        if (playPosition != C.TIME_UNSET && currentStep.getId().equals(idOnRotation)/*&& indexOnRotation == currentIndex*/)
+        player.addListener(new ExoPlayer.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if(playbackState == ExoPlayer.STATE_READY && playWhenReady){
+                    Log.d("Play state","We are playing");
+                    StepsActivity.setCanPlayWhenReady(PLAY_WHEN_READY);
+                }else if(playbackState == ExoPlayer.STATE_READY){
+                    Log.d("Play state","We are paused");
+                    StepsActivity.setCanPlayWhenReady(DO_NOT_PLAY_WHEN_READY);
+                }
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+
+            }
+        });
+
+        if (playPosition != C.TIME_UNSET && currentStep.getId().equals(idOnRotation))
             player.seekTo(playPosition);
 
         player.prepare(mediaSource);
@@ -167,7 +214,13 @@ public class FragmentVideoWithInstructions extends Fragment {
         simpleExoPlayerView.requestFocus();
         simpleExoPlayerView.setPlayer(player);
 
-        player.setPlayWhenReady(true);
+        if(shouldPlayWhenReady == DO_NOT_PLAY_WHEN_READY && currentStep.getId().equals(idOnRotation)){
+            player.setPlayWhenReady(false);
+        }else if(shouldPlayWhenReady == PLAY_WHEN_READY && currentStep.getId().equals(idOnRotation)){
+            player.setPlayWhenReady(true);
+        }else {
+            player.setPlayWhenReady(true);
+        }
     }
 
     @Override
@@ -224,5 +277,9 @@ public class FragmentVideoWithInstructions extends Fragment {
 
     public void setIdOnRotation(String idOnRotation) {
         this.idOnRotation = idOnRotation;
+    }
+
+    public void setShouldPlayWhenReady(int shouldPlayWhenReady) {
+        this.shouldPlayWhenReady = shouldPlayWhenReady;
     }
 }

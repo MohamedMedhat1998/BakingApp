@@ -36,7 +36,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private static final String DISPLAYED_FRAGMENT_KEY = "current_fragment";
     private static final String RECIPE_KEY = "recipe_key";
     private static final String LAST_SEEN_STEP_KEY = "last_seen_step_key";
-    private final static String ROTATION_ID_KEY = "id_on_rotation";
+    private static final String ROTATION_ID_KEY = "id_on_rotation";
+    private static final String PLAY_PAUSE_STATE_KEY = "pp_state";
 
     private static final int TABLET = 5;
     private static final int NOT_TABLET = 10;
@@ -53,6 +54,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private Step lastSeenStep;
     private static long currentPosition;
     private String rotationId;
+    private static int canPlayWhenReady;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -100,6 +102,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 Log.d("Current Pos Steps Act",currentPosition + "");
 
                 rotationId = savedInstanceState.getString(ROTATION_ID_KEY);
+                canPlayWhenReady = savedInstanceState.getInt(PLAY_PAUSE_STATE_KEY);
 
                 if(currentDisplayedFragment == FRAGMENT_INGREDIENTS){
                     setUpDefaultScreenForTablets();
@@ -199,6 +202,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             if(tempFragment.isVisible()){
                 tempFragment.setPlayPosition(currentPosition);
                 tempFragment.setIdOnRotation(rotationId);
+                tempFragment.setShouldPlayWhenReady(canPlayWhenReady);
                 tempFragment.updateContent(selectedStep);
                 Log.d("Location","Visible");
             }
@@ -212,6 +216,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             fragmentVideoWithInstructions.setSelectedStep(selectedStep);
             fragmentVideoWithInstructions.setPlayPosition(currentPosition);
             fragmentVideoWithInstructions.setIdOnRotation(rotationId);
+            fragmentVideoWithInstructions.setShouldPlayWhenReady(canPlayWhenReady);
 
             fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
             fragmentTransaction.commit();
@@ -230,6 +235,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
             outState.putParcelable(LAST_SEEN_STEP_KEY,lastSeenStep);
             outState.putLong(getString(R.string.play_position),currentPosition);
             outState.putString(ROTATION_ID_KEY,lastSeenStep.getId());
+            outState.putInt(PLAY_PAUSE_STATE_KEY,canPlayWhenReady);
             Log.d("current pos sv st act",currentPosition + "");
             for (Fragment fragment:getSupportFragmentManager().getFragments()) {
                 getSupportFragmentManager().beginTransaction().remove(fragment).commit();
@@ -257,5 +263,9 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     public static void setCurrentPosition(long currentPlayPosition) {
         currentPosition = currentPlayPosition;
+    }
+
+    public static void setCanPlayWhenReady(int canPlayWhenReady) {
+        StepsActivity.canPlayWhenReady = canPlayWhenReady;
     }
 }
