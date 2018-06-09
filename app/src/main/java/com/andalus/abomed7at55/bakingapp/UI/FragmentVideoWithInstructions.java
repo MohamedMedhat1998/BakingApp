@@ -3,6 +3,7 @@ package com.andalus.abomed7at55.bakingapp.UI;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.R;
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
+import com.andalus.abomed7at55.bakingapp.StepsActivity;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.ExoPlayerFactory;
@@ -55,6 +57,8 @@ public class FragmentVideoWithInstructions extends Fragment {
     private String videoLink;
     private TrackSelector selector;
     private View view;
+    private long playPosition;
+    private String idOnRotation;
 
     @Nullable
     @Override
@@ -68,7 +72,9 @@ public class FragmentVideoWithInstructions extends Fragment {
             simpleExoPlayerView = view.findViewById(R.id.simple_exo_player);
             ivNoVideo = view.findViewById(R.id.iv_no_video);
             checkAndPlay(view.getContext());
-
+            if(savedInstanceState != null){
+                Log.d("State","Loaded");
+            }
         }
 
         return view;
@@ -88,6 +94,13 @@ public class FragmentVideoWithInstructions extends Fragment {
      */
     public void updateContent(Step selectedStep){
         if(!selectedStep.getId().equals(currentStep.getId())){
+            if(mFlag == FLAG_TABLET){
+                if (player != null) {
+                    player.release();
+                    player = null;
+                    selector = null;
+                }
+            }
             tvStepDescription.setText(selectedStep.getDescription());
             setSelectedStep(selectedStep);
             checkAndPlay(view.getContext());
@@ -145,9 +158,9 @@ public class FragmentVideoWithInstructions extends Fragment {
                 mediaDataSourceFactory,defaultExtractorsFactory,null,null);
 
         player = ExoPlayerFactory.newSimpleInstance(context,selector,loadControl);
-        /*
-        if (playPosition != C.TIME_UNSET && indexOnRotation == currentIndex)
-            player.seekTo(playPosition); */
+
+        if (playPosition != C.TIME_UNSET && currentStep.getId().equals(idOnRotation)/*&& indexOnRotation == currentIndex*/)
+            player.seekTo(playPosition);
 
         player.prepare(mediaSource);
 
@@ -160,6 +173,23 @@ public class FragmentVideoWithInstructions extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
+        Log.d("State","onPause");
+        if(mFlag == FLAG_TABLET){
+            if (player != null) {
+                StepsActivity.setCurrentPosition(player.getCurrentPosition());
+                Log.d("current pos st frag",player.getCurrentPosition() +"");
+
+                player.release();
+                player = null;
+                selector = null;
+            }
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Log.d("State","onDestroyView");
         if(mFlag == FLAG_TABLET){
             if (player != null) {
                 player.release();
@@ -167,5 +197,32 @@ public class FragmentVideoWithInstructions extends Fragment {
                 selector = null;
             }
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        Log.d("State","onDetach");
+        if(mFlag == FLAG_TABLET){
+            if (player != null) {
+                player.release();
+                player = null;
+                selector = null;
+            }
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        Log.d("State","Saved");
+    }
+
+    public void setPlayPosition(long playPosition) {
+        this.playPosition = playPosition;
+    }
+
+    public void setIdOnRotation(String idOnRotation) {
+        this.idOnRotation = idOnRotation;
     }
 }

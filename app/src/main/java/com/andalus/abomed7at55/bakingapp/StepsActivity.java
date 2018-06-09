@@ -36,6 +36,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private static final String DISPLAYED_FRAGMENT_KEY = "current_fragment";
     private static final String RECIPE_KEY = "recipe_key";
     private static final String LAST_SEEN_STEP_KEY = "last_seen_step_key";
+    private final static String ROTATION_ID_KEY = "id_on_rotation";
 
     private static final int TABLET = 5;
     private static final int NOT_TABLET = 10;
@@ -50,6 +51,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
     private int isTabletState = NOT_TABLET;
     private int currentDisplayedFragment;
     private Step lastSeenStep;
+    private static long currentPosition;
+    private String rotationId;
 
     @BindView(R.id.rv_steps_list)
     RecyclerView stepListRecyclerView;
@@ -92,6 +95,12 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 selectedRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
                 currentDisplayedFragment = savedInstanceState.getInt(DISPLAYED_FRAGMENT_KEY);
                 lastSeenStep = savedInstanceState.getParcelable(LAST_SEEN_STEP_KEY);
+
+                currentPosition = savedInstanceState.getLong(getString(R.string.play_position));
+                Log.d("Current Pos Steps Act",currentPosition + "");
+
+                rotationId = savedInstanceState.getString(ROTATION_ID_KEY);
+
                 if(currentDisplayedFragment == FRAGMENT_INGREDIENTS){
                     setUpDefaultScreenForTablets();
                 }else if(currentDisplayedFragment == FRAGMENT_DETAILS){
@@ -101,7 +110,7 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 }
             }
         }
-        //TODO save state in case of tablet
+        //TODO save play position - play/pause state
 
     }
 
@@ -188,6 +197,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
         if(tempFragment != null){
             Log.d("Location","NOT Null");
             if(tempFragment.isVisible()){
+                tempFragment.setPlayPosition(currentPosition);
+                tempFragment.setIdOnRotation(rotationId);
                 tempFragment.updateContent(selectedStep);
                 Log.d("Location","Visible");
             }
@@ -199,6 +210,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
             fragmentVideoWithInstructions.setFlag(FragmentVideoWithInstructions.FLAG_TABLET);
             fragmentVideoWithInstructions.setSelectedStep(selectedStep);
+            fragmentVideoWithInstructions.setPlayPosition(currentPosition);
+            fragmentVideoWithInstructions.setIdOnRotation(rotationId);
 
             fragmentTransaction.replace(R.id.fragment_details_container_tablet,fragmentVideoWithInstructions, VIDEO_FRAGMENT_TAG);
             fragmentTransaction.commit();
@@ -209,17 +222,19 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.recipeSteps),stepsList);
         if(isTablet){
             outState.putInt(IS_TABLET_KEY,isTabletState);
             outState.putInt(DISPLAYED_FRAGMENT_KEY,currentDisplayedFragment);
             outState.putParcelable(RECIPE_KEY,selectedRecipe);
             outState.putParcelable(LAST_SEEN_STEP_KEY,lastSeenStep);
-            //TODO fix this error
+            outState.putLong(getString(R.string.play_position),currentPosition);
+            outState.putString(ROTATION_ID_KEY,lastSeenStep.getId());
+            Log.d("current pos sv st act",currentPosition + "");
             for (Fragment fragment:getSupportFragmentManager().getFragments()) {
                 getSupportFragmentManager().beginTransaction().remove(fragment).commit();
             }
+            super.onSaveInstanceState(outState);
         }
     }
 
@@ -238,5 +253,9 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
      */
     public static String getId() {
         return selectedRecipe.getId();
+    }
+
+    public static void setCurrentPosition(long currentPlayPosition) {
+        currentPosition = currentPlayPosition;
     }
 }
