@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     TextView tvNoConnection;
 
     //TODO add unit tests
+    //TODO remove all log statements
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

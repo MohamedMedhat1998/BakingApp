@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Surface;
 import android.view.View;
@@ -14,17 +15,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.andalus.abomed7at55.bakingapp.Recipes.Step;
+import com.andalus.abomed7at55.bakingapp.UI.FragmentVideoWithInstructions;
 import com.google.android.exoplayer2.C;
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.ExoPlaybackException;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.LoadControl;
 import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.Timeline;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.TrackGroupArray;
 import com.google.android.exoplayer2.trackselection.AdaptiveVideoTrackSelection;
 import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
+import com.google.android.exoplayer2.trackselection.TrackSelectionArray;
 import com.google.android.exoplayer2.trackselection.TrackSelector;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.BandwidthMeter;
@@ -41,6 +48,8 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class DetailsActivity extends AppCompatActivity {
+
+    private static final String SHOULD_PLAY_WHEN_READY_KEY = "should_play";
 
     @BindView(R.id.tv_view_full_description)
     TextView tvShowViewFullDescription;
@@ -65,6 +74,8 @@ public class DetailsActivity extends AppCompatActivity {
     private int currentIndex, indexOnRotation;
     private int n , i;
     private long playPosition;
+    private int shouldPlayWhenReady = FragmentVideoWithInstructions.PLAY_WHEN_READY;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,6 +102,7 @@ public class DetailsActivity extends AppCompatActivity {
             allSteps = savedInstanceState.getParcelableArrayList(getString(R.string.steps));
             currentIndex = savedInstanceState.getInt(getString(R.string.index));
             indexOnRotation = savedInstanceState.getInt(getString(R.string.index_on_rotation));
+            shouldPlayWhenReady = savedInstanceState.getInt(SHOULD_PLAY_WHEN_READY_KEY);
             currentStep = allSteps.get(currentIndex);
             i = currentIndex;
             n = allSteps.size();
@@ -211,6 +223,42 @@ public class DetailsActivity extends AppCompatActivity {
 
         player = ExoPlayerFactory.newSimpleInstance(this,selector,loadControl);
 
+        player.addListener(new ExoPlayer.EventListener() {
+            @Override
+            public void onTimelineChanged(Timeline timeline, Object manifest) {
+
+            }
+
+            @Override
+            public void onTracksChanged(TrackGroupArray trackGroups, TrackSelectionArray trackSelections) {
+
+            }
+
+            @Override
+            public void onLoadingChanged(boolean isLoading) {
+
+            }
+
+            @Override
+            public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                if(playWhenReady){
+                    shouldPlayWhenReady = FragmentVideoWithInstructions.PLAY_WHEN_READY;
+                }else {
+                    shouldPlayWhenReady = FragmentVideoWithInstructions.DO_NOT_PLAY_WHEN_READY;
+                }
+            }
+
+            @Override
+            public void onPlayerError(ExoPlaybackException error) {
+
+            }
+
+            @Override
+            public void onPositionDiscontinuity() {
+
+            }
+        });
+
         if (playPosition != C.TIME_UNSET && indexOnRotation == currentIndex)
             player.seekTo(playPosition);
 
@@ -219,7 +267,13 @@ public class DetailsActivity extends AppCompatActivity {
         simpleExoPlayerView.requestFocus();
         simpleExoPlayerView.setPlayer(player);
 
-        player.setPlayWhenReady(true);
+        if(shouldPlayWhenReady == FragmentVideoWithInstructions.DO_NOT_PLAY_WHEN_READY && indexOnRotation == currentIndex){
+            player.setPlayWhenReady(false);
+        }else if(shouldPlayWhenReady == FragmentVideoWithInstructions.PLAY_WHEN_READY && indexOnRotation == currentIndex){
+            player.setPlayWhenReady(true);
+        }else {
+            player.setPlayWhenReady(true);
+        }
     }
 
     @Override
@@ -227,6 +281,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.steps),allSteps);
         outState.putInt(getString(R.string.index),currentIndex);
+        outState.putInt(SHOULD_PLAY_WHEN_READY_KEY,shouldPlayWhenReady);
         if (player != null) {
             outState.putLong(getString(R.string.play_position),player.getCurrentPosition());
             outState.putInt(getString(R.string.index_on_rotation), currentIndex);

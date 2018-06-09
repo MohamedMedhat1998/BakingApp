@@ -186,10 +186,10 @@ public class FragmentVideoWithInstructions extends Fragment {
 
             @Override
             public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                if(playbackState == ExoPlayer.STATE_READY && playWhenReady){
+                if(playWhenReady){
                     Log.d("Play state","We are playing");
                     StepsActivity.setCanPlayWhenReady(PLAY_WHEN_READY);
-                }else if(playbackState == ExoPlayer.STATE_READY){
+                }else {
                     Log.d("Play state","We are paused");
                     StepsActivity.setCanPlayWhenReady(DO_NOT_PLAY_WHEN_READY);
                 }
