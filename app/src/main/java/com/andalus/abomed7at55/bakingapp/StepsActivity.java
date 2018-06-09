@@ -113,7 +113,6 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                 }
             }
         }
-        //TODO save play position - play/pause state
 
     }
 

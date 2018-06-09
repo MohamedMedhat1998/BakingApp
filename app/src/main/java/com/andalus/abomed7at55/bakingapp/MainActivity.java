@@ -9,6 +9,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
@@ -24,6 +28,7 @@ import com.andalus.abomed7at55.bakingapp.Interfaces.RecipeClickListener;
 import com.andalus.abomed7at55.bakingapp.Networking.MyLoader;
 import com.andalus.abomed7at55.bakingapp.Recipes.JsonParser;
 import com.andalus.abomed7at55.bakingapp.Recipes.Recipe;
+import com.andalus.abomed7at55.bakingapp.Tests.SimpleIdlingResource;
 
 import org.json.JSONException;
 
@@ -46,6 +51,8 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private SharedPreferences sharedPreferences;
     private String initialId;
 
+    @Nullable private SimpleIdlingResource simpleIdlingResource;
+
     @BindView(R.id.recipe_recycler_view)
     RecyclerView recipeRecyclerView;
     @BindView(R.id.progressBar)
@@ -53,7 +60,6 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     @BindView(R.id.tv_main_no_connection)
     TextView tvNoConnection;
 
-    //TODO add unit tests
     //TODO remove all log statements
 
     @Override
@@ -131,9 +137,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         return exportableRecipes;
     }
 
-    //Loader callbacks
+    //Loader callbacks----------
+    @NonNull
     @Override
     public Loader<String> onCreateLoader(int id, Bundle args) {
+        if(simpleIdlingResource != null){
+            simpleIdlingResource.setIdleState(false);
+        }
         indicatorProgressBar.setVisibility(View.VISIBLE);
         return new MyLoader(this,getString(R.string.api));
     }
@@ -157,6 +167,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        if(simpleIdlingResource!=null){
+            simpleIdlingResource.setIdleState(true);
+        }
     }
 
     @Override
@@ -177,5 +190,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList(getString(R.string.recipeArrayKey),recipes);
         outState.putInt(getString(R.string.load_state), loadState);
+    }
+
+
+    @VisibleForTesting
+    @NonNull
+    public IdlingResource getIdlingResource() {
+        if (simpleIdlingResource == null) {
+            simpleIdlingResource = new SimpleIdlingResource();
+        }
+        return simpleIdlingResource;
     }
 }

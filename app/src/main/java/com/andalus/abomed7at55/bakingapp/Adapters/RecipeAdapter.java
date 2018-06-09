@@ -1,6 +1,7 @@
 package com.andalus.abomed7at55.bakingapp.Adapters;
 
 import android.content.Context;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,14 +55,16 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeView
     public class RecipeViewHolder extends RecyclerView.ViewHolder{
         @BindView(R.id.tv_recipe_menu_label)
         TextView tvLabel;
+        @BindView(R.id.recipe_item_container)
+        ConstraintLayout constraintLayout;
 
         public RecipeViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
 
         }
-        @OnClick(R.id.tv_recipe_menu_label)
-        void labelClicked(){
+        @OnClick(R.id.recipe_item_container)
+        void itemClicked(){
             mRecipeClickListener.onRecipeClicked(recipes.get(getAdapterPosition()).getId());
         }
     }
