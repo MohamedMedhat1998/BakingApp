@@ -54,7 +54,13 @@ public class RecipeWidget extends AppWidgetProvider {
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
         // There may be multiple widgets active, so update all of them
-
+        for (int appWidgetId : appWidgetIds) {
+            updateAppWidget(context,
+                    appWidgetManager,
+                    appWidgetId,
+                    PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences_label), DEFAULT_LABEL),
+                    PreferenceManager.getDefaultSharedPreferences(context).getString(context.getString(R.string.preferences_body), DEFAULT_BODY));
+        }
     }
 }
 
