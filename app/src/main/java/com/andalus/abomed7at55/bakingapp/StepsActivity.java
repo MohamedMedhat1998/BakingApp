@@ -239,8 +239,8 @@ public class StepsActivity extends AppCompatActivity implements StepClickListene
                     getSupportFragmentManager().beginTransaction().remove(fragment).commit();
                 }
             }
-            super.onSaveInstanceState(outState);
         }
+        super.onSaveInstanceState(outState);
     }
 
     @Override
